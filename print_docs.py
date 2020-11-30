@@ -540,16 +540,17 @@ def write_export_db(export_db):
 
 def write_import_graph_json(import_graph):
   from networkx import json_graph
-  with open_outfile('import_graph.json', 'w') as wout:
-    # `default` is a quick fix to avoid the unjsonable `Path` objects
-    json.dump(json_graph.node_link_data(g), f, default=lambda x: None)
+  graph_data = json_graph.node_link_data(import_graph)
+  with open_outfile('import_graph.json', 'w') as f:
+    # `default` is a quick fix to avoid the un-json-able `Path` objects
+    json.dump(graph_data, f, default=lambda x: None)
 
 def main():
   file_map, loc_map, notes, mod_docs, instances, tactic_docs = load_json()
   setup_jinja_globals(file_map, loc_map, instances)
   write_decl_txt(loc_map)
   write_html_files(file_map, loc_map, notes, mod_docs, instances, tactic_docs)
-  write_import_graph_json(import_graph)
+  write_import_graph_json(env.globals['import_graph'])
   write_redirects(loc_map, file_map)
   copy_css(html_root, use_symlinks=cl_args.l)
   copy_yaml_files(html_root)
